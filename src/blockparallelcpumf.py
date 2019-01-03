@@ -15,20 +15,11 @@ blocks=int(args[3])
 steps = int(args[4])
 gpu_steps = int(args[5])
 
-dataset=""
-if len(args)>4:
-    dataset = args[4]
-if len(args)>5 and args[5]=='file':
-    start_time = time.clock()
-    #sys.stdout = open('../log/bcmf-'+dataset+str(blocks)+'-'+start_time+'.out','w+')
-    #sys.stderr = open('../lob/bcmf-'+dataset+str(blocks)+'-'+start_time+'.err','a')
-
 def error(R, P , Q, u1, u2, v1, v2):
     Rc = np.dot(P,Q)
     Rc = Rc - R[u1:u2+1,v1:v2+1]
     Rc = np.square(Rc)
     error = np.sum(Rc)/(P.shape[0]*Q.shape[1])
-    #print("error fun ", u1, u2+1, v1, v2+1, P.shape[0], Q.shape[1])
     return np.sqrt(error)
 
 def block_factorization(P, Q, R, u1, u2, v1, v2, steps, K=10, alpha=0.0001, beta=0.01):
@@ -56,36 +47,9 @@ def block_factorization(P, Q, R, u1, u2, v1, v2, steps, K=10, alpha=0.0001, beta
                         P[i,k] = P[i,k] + alpha * (2 * eij * Q[k,j] - beta * P[i,k])
                     if(np.isfinite(alpha * (2 * eij * P[i,k] - beta * Q[k,j]))):
                         Q[k,j] = Q[k,j] + alpha * (2 * eij * P[i,k] - beta * Q[k,j])
-        #e = 0
-        #Rc = np.dot(P, Q)
-        #for i in range(u2-u1+1):
-        #    for j in range(v2-v1+1):
-        #        e = e + pow(R[u1+i,v1+j] - Rc[i,j] , 2)
-        #        for k in range(K):
-        #            e = e + (beta/2) * ( pow(P[i,k],2) + pow(Q[k,j],2) )
-        #flag=round(error(R,P,Q, u1, u2, v1, v2),3)
-
-        #print("RMSE till now :", flag, step)
-        #if flag <= 0.1:
-        #    print("Block converged for flag < delta")
-        #    break
-        #elif count>3:
-        #    print("Block converged for count > 3 ")
-        #    break
-        #elif flag1<flag :
-        #    print("Block converged for flag1 < flag")
-        #    break
-        #elif flag==flag1:
-        #    count=count+1
-        #else:
-        #    count=0
-        #flag1=flag
         
-    #print("Time for MF :", round(time.clock()-t0,2), flag1)
     U[u1:u2+1, 0:latent] = P.reshape( (u2-u1+1, latent))
     V[0:latent, v1:v2+1] = Q.reshape( (latent, v2-v1+1))
-
-    #return P, Q
 
 def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blocks=1, latent=10, steps=10, gpu_steps=2, alpha=0.00001, beta=0.01, delta=0.01, rmse_repeat_count=3, debug=2, dataset=''):
 
@@ -102,8 +66,8 @@ def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blo
     y1, y2 = [], []
     count = 0
 
-    flag1 = error(R, U, V,0, R.shape[1], 0, R.shape[0]) #e(U, V , test_users, test_movies, test_ratings, min(split, max(np.max(test_users), np.max(test_movies))), latent=latent, debug=debug)
-
+    flag1 = error(R, U, V,0, R.shape[1], 0, R.shape[0]) 
+    
     for k in range(steps):
 
         if debug>1:
@@ -171,19 +135,6 @@ def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blo
                     t.start()
                     t8 = time.clock()
 
-                    #if debug>1:
-                    #    print("Shape of P, Q :", P.shape, Q.shape)
-
-                    #U[u1:u2+1, 0:latent] = P.reshape( (u2-u1+1, latent))
-                    #V[0:latent, v1:v2+1] = Q.reshape( (latent, v2-v1+1))
-                    #t9 = time.clock()
-                    #if debug>1:
-                    #    print("Timer :", round(t7-t6,2), round(t8-t7,2), round(t9-t8,2))
-                    #temp = error(R, P,Q, u1, u2, v1, v2)
-                    #rmse += temp
-                    #if debug>1:
-                    #    print("Completed processing : ", i , j, round(rmse,3))
-
                 stemp+=1
 
         t5 = time.clock()
@@ -212,8 +163,7 @@ def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blo
     np.savetxt(str(blocks*blocks)+'blocks_'+str(gpu_steps)+'iterations_y2.txt', y2, fmt='%.3f')
     np.savetxt(str(blocks*blocks)+'blocks_'+str(gpu_steps)+'iterations_y1.txt', y1, fmt='%.3f')
 
-R = np.loadtxt('../R.txt')#[]
-#R = R[0:100,0:100]
+R = np.loadtxt('../R.txt')
 users = []
 movies = []
 ratings = []

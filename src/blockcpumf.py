@@ -14,20 +14,11 @@ blocks=int(args[3])
 steps = int(args[4])
 gpu_steps = int(args[5])
 
-dataset=""
-if len(args)>4:
-    dataset = args[4]
-if len(args)>5 and args[5]=='file':
-    start_time = time.clock()
-    #sys.stdout = open('../log/bcmf-'+dataset+str(blocks)+'-'+start_time+'.out','w+')
-    #sys.stderr = open('../lob/bcmf-'+dataset+str(blocks)+'-'+start_time+'.err','a')
-
 def error(R, P , Q, u1, u2, v1, v2):
     Rc = np.dot(P,Q)
     Rc = Rc - R[u1:u2+1,v1:v2+1]
     Rc = np.square(Rc)
     error = np.sum(Rc)/(P.shape[0]*Q.shape[1])
-    #print("error fun ", u1, u2+1, v1, v2+1, P.shape[0], Q.shape[1])
     return np.sqrt(error)
 
 def block_factorization(P, Q, R, u1, u2, v1, v2, K=10, steps=4, alpha=0.0001, beta=0.01):
@@ -55,30 +46,25 @@ def block_factorization(P, Q, R, u1, u2, v1, v2, K=10, steps=4, alpha=0.0001, be
                         P[i,k] = P[i,k] + alpha * (2 * eij * Q[k,j] - beta * P[i,k])
                     if(np.isfinite(alpha * (2 * eij * P[i,k] - beta * Q[k,j]))):
                         Q[k,j] = Q[k,j] + alpha * (2 * eij * P[i,k] - beta * Q[k,j])
-        #e = 0
-        #Rc = np.dot(P, Q)
-        #for i in range(u2-u1+1):
-        #    for j in range(v2-v1+1):
-        #        e = e + pow(R[u1+i,v1+j] - Rc[i,j] , 2)
-        #        for k in range(K):
-        #            e = e + (beta/2) * ( pow(P[i,k],2) + pow(Q[k,j],2) )
-        flag=round(error(R,P,Q, u1, u2, v1, v2),3)
+        
+        #un-comment for block level full-convergence 
+        #flag=round(error(R,P,Q, u1, u2, v1, v2),3)
 
-        print("RMSE till now :", flag, step)
-        if flag <= 0.1:
-            print("Block converged for flag < delta")
-            break
-        elif count>3:
-            print("Block converged for count > 3 ")
-            break
-        elif flag1<flag :
-            print("Block converged for flag1 < flag")
-            break
-        elif flag==flag1:
-            count=count+1
-        else:
-            count=0
-        flag1=flag
+        #print("RMSE till now :", flag, step)
+        #if flag <= 0.1:
+        #    print("Block converged for flag < delta")
+        #    break
+        #elif count>3:
+        #    print("Block converged for count > 3 ")
+        #    break
+        #elif flag1<flag :
+        #    print("Block converged for flag1 < flag")
+        #    break
+        #elif flag==flag1:
+        #    count=count+1
+        #else:
+        #    count=0
+        #flag1=flag
         
     #print("Time for MF :", round(time.clock()-t0,2), flag1)
 
@@ -167,7 +153,8 @@ def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blo
 
         flag=round(test_rmse,4)
 
-        #if flag < delta:
+        # un-comment for early convergence stopping 
+        # if flag < delta:
         #    break
         #elif flag1<flag :
         #    break
@@ -182,13 +169,12 @@ def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blo
     np.savetxt(str(blocks*blocks)+'blocks_'+str(gpu_steps)+'iterations_y2.txt', y2, fmt='%.3f')
     np.savetxt(str(blocks*blocks)+'blocks_'+str(gpu_steps)+'iterations_y1.txt', y1, fmt='%.3f')
 
-R = np.loadtxt('../R.txt')#[]
-R = R[0:100,0:100]
+R = np.loadtxt('../R.txt')
 users = []
 movies = []
 ratings = []
-for i in range(100):
-    for j in range(100):
+for i in range(1000):
+    for j in range(1000):
         users.append(i)
         movies.append(j)
         ratings.append(R[i,j])
