@@ -45,5 +45,5 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Acknowledgments
 
-* Vineet C Nair, Professor, University of Hyderabad
+* [Vineet C Nair](http://scis.uohyd.ac.in/People/profile/vn_profile.php), Professor, University of Hyderabad 
 * Bilsangeeth D, M Tech Student, University of Hyderabad
