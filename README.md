@@ -1,5 +1,4 @@
-# blockmf
-Block Matrix Factorization 
+# Block Matrix Factorization 
 
 Block based matrix factorization approach that splits a given matrix into required number of blocks and factorization achieved on individual blocks
 
