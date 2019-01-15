@@ -2,7 +2,6 @@
 
 Block based matrix factorization approach that splits a given matrix into required number of blocks and factorization achieved on individual blocks
 
-**Refer:** https://arxiv.org/pdf/1901.00444.pdf for theorical basis.
 
 ## Getting Started
 
