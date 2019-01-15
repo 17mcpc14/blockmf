@@ -37,7 +37,7 @@ Below MF implmentations are hardcoded to run on data/R.txt - a randomly generate
 
 ## Authors
 
-* **Prasad G Bhavana** - *Initial work* - [LinkedIn](https://www.linkedin.com/in/prasadbhavana/)
+* **17MCPC14** - *Initial work* 
 
 ## License
 
@@ -45,5 +45,3 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Acknowledgments
 
-* [Vineet C Nair](http://scis.uohyd.ac.in/People/profile/vn_profile.php), Professor, University of Hyderabad 
-* Bilsangeeth D, M Tech Student, University of Hyderabad
